@@ -23,6 +23,6 @@ public class Endereco implements Serializable {
     private String cidade;
     private String estado;
 
-    @OneToOne(mappedBy = "endereco", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "endereco", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Funcionario funcionario;
 }
