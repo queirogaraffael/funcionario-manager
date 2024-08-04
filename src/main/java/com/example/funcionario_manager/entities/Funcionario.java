@@ -1,4 +1,4 @@
-package com.example.FuncionarioManager.entities;
+package com.example.funcionario_manager.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
