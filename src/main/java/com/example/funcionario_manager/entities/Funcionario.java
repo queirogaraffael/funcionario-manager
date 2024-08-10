@@ -1,6 +1,8 @@
 package com.example.funcionario_manager.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,13 +18,14 @@ import java.io.Serializable;
 public class Funcionario implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long id;
+    @Size(min = 11, max = 11, message = "CPF deve ter 11 caracteres")
+    private String cpf;
     private String nome;
     private String cargo;
 
-    @OneToOne
+    @NotNull
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id")
     private Endereco endereco;
 }

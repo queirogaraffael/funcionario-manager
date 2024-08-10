@@ -1,6 +1,5 @@
 package com.example.funcionario_manager.repositories;
 
-import com.example.funcionario_manager.entities.Endereco;
 import com.example.funcionario_manager.entities.Funcionario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,10 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> {
-
-    @Query("SELECT funcionario.endereco FROM Funcionario funcionario WHERE funcionario.id = :id")
-    Endereco findEnderecoByFuncionarioId(@Param("id") Long id);
+public interface FuncionarioRepository extends JpaRepository<Funcionario, String> {
 
 
     @Query("SELECT f FROM Funcionario f WHERE LOWER(f.nome) LIKE LOWER(CONCAT('%', :nome, '%'))")

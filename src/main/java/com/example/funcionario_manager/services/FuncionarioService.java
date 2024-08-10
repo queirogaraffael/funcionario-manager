@@ -1,7 +1,7 @@
 package com.example.funcionario_manager.services;
 
-import com.example.funcionario_manager.entities.Endereco;
 import com.example.funcionario_manager.entities.Funcionario;
+import com.example.funcionario_manager.exceptions.FuncionarioJaExisteException;
 import com.example.funcionario_manager.exceptions.ResourceNotFoundException;
 import com.example.funcionario_manager.repositories.FuncionarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +11,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class FuncionarioService {
+
+    private static final String FUNCIONARIO_NAO_ENCONTRADO = "Funcionario não encontrado.";
 
     @Autowired
     private FuncionarioRepository funcionarioRepository;
@@ -20,7 +24,14 @@ public class FuncionarioService {
 
     @Transactional
     public Funcionario criaFuncionario(Funcionario funcionario) {
-        return funcionarioRepository.save(funcionario);
+        Optional<Funcionario> funcionario1 = funcionarioRepository.findById(funcionario.getCpf());
+
+        if(funcionario1.isPresent()){
+            throw new FuncionarioJaExisteException();
+        }else{
+            return funcionarioRepository.save(funcionario);
+        }
+
     }
 
 
@@ -33,44 +44,26 @@ public class FuncionarioService {
 
 
     @Transactional(readOnly = true)
-    public Funcionario getFuncionarioById(Long id) {
-        return funcionarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Funcionario com este ID não encontrado."));
+    public Funcionario getFuncionarioByCpf(String cpf) {
+        return funcionarioRepository.findById(cpf).orElseThrow(() -> new ResourceNotFoundException(FUNCIONARIO_NAO_ENCONTRADO));
     }
 
 
     @Transactional
-    public Funcionario atualizaFuncionarioById(Long id, Funcionario novoFuncionario) {
-        Funcionario funcionario = funcionarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Funcionario com este ID não encontrado."));
+    public Funcionario atualizaFuncionarioByCpf(String cpf, Funcionario funcionarioAtualizado) {
+        Funcionario funcionario = funcionarioRepository.findById(cpf).orElseThrow(() -> new ResourceNotFoundException(FUNCIONARIO_NAO_ENCONTRADO));
 
-        funcionario.setNome(novoFuncionario.getNome());
-        funcionario.setCargo(novoFuncionario.getCargo());
-        funcionario.setEndereco(novoFuncionario.getEndereco());
+        funcionario.setNome(funcionarioAtualizado.getNome());
+        funcionario.setCargo(funcionarioAtualizado.getCargo());
+        funcionario.setEndereco(funcionarioAtualizado.getEndereco());
 
         return funcionarioRepository.save(funcionario);
     }
 
 
     @Transactional
-    public void deletaFuncionarioById(Long id) {
-        funcionarioRepository.deleteById(id);
-    }
-
-
-    @Transactional(readOnly = true)
-    public Endereco getEnderecoDeFuncionarioById(Long idFuncionario) {
-        return funcionarioRepository.findEnderecoByFuncionarioId(idFuncionario);
-    }
-
-
-    @Transactional
-    public Endereco atualizaEnderecoById(Long idFuncionario, Endereco novoEndereco) {
-        Funcionario funcionario = funcionarioRepository.findById(idFuncionario).orElseThrow(() -> new ResourceNotFoundException("Funcionario com este Id não encontrado."));
-
-        funcionario.setEndereco(novoEndereco);
-
-        funcionarioRepository.save(funcionario);
-
-        return novoEndereco;
+    public void deletaFuncionarioByCpf(String cpf) {
+        funcionarioRepository.deleteById(cpf);
     }
 
 

@@ -18,4 +18,13 @@ public class CustomExceptionHandler {
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
+
+
+    @ExceptionHandler(FuncionarioJaExisteException.class)
+    public ResponseEntity<Object> handleFuncionarioJaExisteException(FuncionarioJaExisteException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+
+
 }

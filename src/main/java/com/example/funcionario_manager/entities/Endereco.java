@@ -1,6 +1,8 @@
 package com.example.funcionario_manager.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,6 +25,7 @@ public class Endereco implements Serializable {
     private String cidade;
     private String estado;
 
-    @OneToOne(mappedBy = "endereco", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @OneToOne(mappedBy = "endereco", fetch = FetchType.LAZY)
     private Funcionario funcionario;
 }
