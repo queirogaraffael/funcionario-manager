@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.builder.HashCodeExclude;
 
 import java.io.Serializable;
 
@@ -18,9 +19,14 @@ import java.io.Serializable;
 public class Funcionario implements Serializable {
 
     @Id
-    @EqualsAndHashCode.Include
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
     @Size(min = 11, max = 11, message = "CPF deve ter 11 caracteres")
+    @EqualsAndHashCode.Include
     private String cpf;
+
     private String nome;
     private String cargo;
 

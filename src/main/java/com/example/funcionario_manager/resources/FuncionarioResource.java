@@ -58,11 +58,16 @@ public class FuncionarioResource {
     @GetMapping("/{cpf}")
     public ResponseEntity<Funcionario> getFuncionarioByCpf(@PathVariable String cpf) {
         Funcionario funcionario = funcionarioService.getFuncionarioByCpf(cpf);
+
+        if (funcionario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         return ResponseEntity.ok(funcionario);
     }
 
 
-    @PutMapping()
+    @PutMapping("/{cpf}")
     @Operation(summary = "Atualiza dados do funcionario.", description = "Nome, cargo e endereço.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Funcionário atualizado com sucesso"),
@@ -76,7 +81,7 @@ public class FuncionarioResource {
     }
 
 
-    @DeleteMapping()
+    @DeleteMapping("/{cpf}")
     @Operation(summary = "Deleta um funcionário pelo CPF.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Funcionário deletado com sucesso"),
@@ -128,7 +133,7 @@ public class FuncionarioResource {
             @RequestParam String cidade,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return funcionarioService.buscaFuncionariosPorCargo(cidade, page, size);
+        return funcionarioService.buscaFuncionariosPorCidade(cidade, page, size);
     }
 
 

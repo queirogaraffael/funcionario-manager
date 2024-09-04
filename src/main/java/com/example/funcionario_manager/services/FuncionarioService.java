@@ -24,11 +24,11 @@ public class FuncionarioService {
 
     @Transactional
     public Funcionario criaFuncionario(Funcionario funcionario) {
-        Optional<Funcionario> funcionario1 = funcionarioRepository.findById(funcionario.getCpf());
+        Optional<Funcionario> funcionario1 = funcionarioRepository.findByCpf(funcionario.getCpf());
 
-        if(funcionario1.isPresent()){
+        if (funcionario1.isPresent()) {
             throw new FuncionarioJaExisteException();
-        }else{
+        } else {
             return funcionarioRepository.save(funcionario);
         }
 
@@ -45,25 +45,36 @@ public class FuncionarioService {
 
     @Transactional(readOnly = true)
     public Funcionario getFuncionarioByCpf(String cpf) {
-        return funcionarioRepository.findById(cpf).orElseThrow(() -> new ResourceNotFoundException(FUNCIONARIO_NAO_ENCONTRADO));
+        Optional<Funcionario> funcionario = funcionarioRepository.findByCpf(cpf);
+
+        return funcionario.orElse(null);
+
     }
 
 
     @Transactional
     public Funcionario atualizaFuncionarioByCpf(String cpf, Funcionario funcionarioAtualizado) {
-        Funcionario funcionario = funcionarioRepository.findById(cpf).orElseThrow(() -> new ResourceNotFoundException(FUNCIONARIO_NAO_ENCONTRADO));
+        Optional<Funcionario> funcionario = funcionarioRepository.findByCpf(cpf);
 
-        funcionario.setNome(funcionarioAtualizado.getNome());
-        funcionario.setCargo(funcionarioAtualizado.getCargo());
-        funcionario.setEndereco(funcionarioAtualizado.getEndereco());
+        if(funcionario.isPresent()){
+            Funcionario funcionario1 = funcionario.get();
 
-        return funcionarioRepository.save(funcionario);
+            funcionario1.setNome(funcionarioAtualizado.getNome());
+            funcionario1.setCargo(funcionarioAtualizado.getCargo());
+            funcionario1.setEndereco(funcionarioAtualizado.getEndereco());
+
+            return funcionarioRepository.save(funcionario1);
+        }else{
+            throw  new ResourceNotFoundException(FUNCIONARIO_NAO_ENCONTRADO);
+        }
+
+
     }
 
 
     @Transactional
     public void deletaFuncionarioByCpf(String cpf) {
-        funcionarioRepository.deleteById(cpf);
+        funcionarioRepository.deleteByCpf(cpf);
     }
 
 
@@ -86,7 +97,6 @@ public class FuncionarioService {
     @Transactional(readOnly = true)
     public Page<Funcionario> buscaFuncionariosPorCidade(String cidade, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-
         return funcionarioRepository.findByCidadePaginados(cidade, pageable);
     }
 
