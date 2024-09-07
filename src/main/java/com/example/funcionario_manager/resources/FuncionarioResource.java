@@ -81,18 +81,6 @@ public class FuncionarioResource {
     }
 
 
-    @DeleteMapping("/{cpf}")
-    @Operation(summary = "Deleta um funcionário pelo CPF.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Funcionário deletado com sucesso"),
-            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
-    })
-    public ResponseEntity<Void> deletaFuncionarioByCpf(@PathVariable String cpf) {
-        funcionarioService.deletaFuncionarioByCpf(cpf);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
-
     @GetMapping("/nome")
     @Operation(summary = "Busca funcionários por nome de forma paginada.", description = "Retorna uma página de funcionários cujo nome contém o valor fornecido.")
     @ApiResponses(value = {
@@ -134,6 +122,18 @@ public class FuncionarioResource {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return funcionarioService.buscaFuncionariosPorCidade(cidade, page, size);
+    }
+
+
+    @DeleteMapping("/{cpf}")
+    @Operation(summary = "Deleta um funcionário pelo CPF.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Funcionário deletado com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
+    })
+    public ResponseEntity<Void> deletaFuncionarioByCpf(@PathVariable String cpf) {
+        funcionarioService.deletaFuncionarioByCpf(cpf);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 

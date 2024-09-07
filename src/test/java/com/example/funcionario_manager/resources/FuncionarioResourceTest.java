@@ -42,6 +42,7 @@ class FuncionarioResourceIntegrationTest {
         mockMvc.perform(post("/funcionarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(funcionario)))
+
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.cpf").value("12345678901"))
                 .andExpect(jsonPath("$.nome").value("João Silva"));
@@ -123,6 +124,7 @@ class FuncionarioResourceIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].nome").value("João Silva"));
     }
+
 
 
     @Test
