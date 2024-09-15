@@ -1,5 +1,6 @@
 package com.example.funcionario_manager.services;
 
+import com.example.funcionario_manager.entities.Endereco;
 import com.example.funcionario_manager.entities.Funcionario;
 import com.example.funcionario_manager.exceptions.FuncionarioJaExisteException;
 import com.example.funcionario_manager.exceptions.ResourceNotFoundException;
@@ -61,7 +62,12 @@ public class FuncionarioService {
 
             funcionario1.setNome(funcionarioAtualizado.getNome());
             funcionario1.setCargo(funcionarioAtualizado.getCargo());
-            funcionario1.setEndereco(funcionarioAtualizado.getEndereco());
+
+            Endereco endereco = funcionario1.getEndereco();
+
+            endereco.setRua(funcionarioAtualizado.getEndereco().getRua());
+            endereco.setCidade(funcionarioAtualizado.getEndereco().getCidade());
+            endereco.setEstado(funcionarioAtualizado.getEndereco().getEstado());
 
             return funcionarioRepository.save(funcionario1);
         }else{

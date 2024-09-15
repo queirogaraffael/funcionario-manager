@@ -63,7 +63,7 @@ export default function () {
         'status is 200': (r) => r.status === 200,
     });
 
-    sleep(1)
+    sleep(1);
 
 
     // Consulta de funcionários por nome paginados
