@@ -1,6 +1,8 @@
 package com.example.funcionario_manager.resources;
 
-import com.example.funcionario_manager.entities.Funcionario;
+import com.example.funcionario_manager.dtos.funcionario.FuncionarioRequestDTO;
+import com.example.funcionario_manager.dtos.funcionario.FuncionarioResponseDTO;
+import com.example.funcionario_manager.dtos.funcionario.FuncionarioUpdateDTO;
 import com.example.funcionario_manager.services.FuncionarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -30,11 +31,9 @@ public class FuncionarioResource {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
     @PostMapping
-    public ResponseEntity<?> criaFuncionario(@Valid @RequestBody Funcionario funcionario, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
-        Funcionario funcionarioCriado = funcionarioService.criaFuncionario(funcionario);
+    public ResponseEntity<?> criaFuncionario(@Valid @RequestBody FuncionarioRequestDTO funcionario) {
+
+        FuncionarioResponseDTO funcionarioCriado = funcionarioService.criaFuncionario(funcionario);
         return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioCriado);
     }
 
@@ -42,7 +41,7 @@ public class FuncionarioResource {
     @Operation(summary = "Busca paginada dos funcionarios", description = "Retorna todos os dados de Funcionario e de Endereço.")
     @ApiResponse(responseCode = "200", description = "Retorna funcionarios de uma pagina")
     @GetMapping()
-    public Page<Funcionario> funcionarioPaginados(@RequestParam(defaultValue = "0") int page,
+    public Page<FuncionarioResponseDTO> funcionarioPaginados(@RequestParam(defaultValue = "0") int page,
                                                   @RequestParam(defaultValue = "10") int size) {
         return funcionarioService.getFuncionariosPaginados(page, size);
 
@@ -56,8 +55,8 @@ public class FuncionarioResource {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
     @GetMapping("/{cpf}")
-    public ResponseEntity<Funcionario> getFuncionarioByCpf(@PathVariable String cpf) {
-        Funcionario funcionario = funcionarioService.getFuncionarioByCpf(cpf);
+    public ResponseEntity<FuncionarioResponseDTO> getFuncionarioByCpf(@PathVariable String cpf) {
+        FuncionarioResponseDTO funcionario = funcionarioService.getFuncionarioByCpf(cpf);
 
         if (funcionario == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -74,10 +73,9 @@ public class FuncionarioResource {
             @ApiResponse(responseCode = "404", description = "Funcionário não encontrado com o CPF fornecido"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public ResponseEntity<Funcionario> atualizaFuncionario(@PathVariable String cpf, @RequestBody Funcionario funcionarioAtualizado) {
-        Funcionario funcionario = funcionarioService.atualizaFuncionarioByCpf(cpf, funcionarioAtualizado);
+    public ResponseEntity<FuncionarioResponseDTO> atualizaFuncionario(@PathVariable String cpf, @RequestBody FuncionarioUpdateDTO funcionarioAtualizado) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(funcionario);
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioService.atualizaFuncionarioByCpf(cpf, funcionarioAtualizado));
     }
 
 
@@ -88,7 +86,7 @@ public class FuncionarioResource {
             @ApiResponse(responseCode = "400", description = "Parâmetros inválidos fornecidos"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Page<Funcionario> buscaFuncionariosPorNome(
+    public Page<FuncionarioResponseDTO> buscaFuncionariosPorNome(
             @RequestParam String nome,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -103,7 +101,7 @@ public class FuncionarioResource {
             @ApiResponse(responseCode = "400", description = "Parâmetros inválidos fornecidos"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Page<Funcionario> buscaFuncionariosPorCargo(
+    public Page<FuncionarioResponseDTO> buscaFuncionariosPorCargo(
             @RequestParam String cargo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -117,7 +115,7 @@ public class FuncionarioResource {
             @ApiResponse(responseCode = "400", description = "Parâmetros inválidos fornecidos"),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor")
     })
-    public Page<Funcionario> buscaFuncionariosPorCidade(
+    public Page<FuncionarioResponseDTO> buscaFuncionariosPorCidade(
             @RequestParam String cidade,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {

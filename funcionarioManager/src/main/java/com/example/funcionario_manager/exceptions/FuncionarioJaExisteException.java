@@ -1,13 +1,22 @@
 package com.example.funcionario_manager.exceptions;
 
-import java.io.Serial;
-
 public class FuncionarioJaExisteException extends RuntimeException{
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     public FuncionarioJaExisteException() {
-        super();
+    }
+
+    public FuncionarioJaExisteException(String message) {
+        super(message);
+    }
+
+    public FuncionarioJaExisteException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public FuncionarioJaExisteException(Throwable cause) {
+        super(cause);
+    }
+
+    public FuncionarioJaExisteException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

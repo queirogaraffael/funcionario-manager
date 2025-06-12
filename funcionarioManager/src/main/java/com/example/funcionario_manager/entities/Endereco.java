@@ -20,11 +20,11 @@ public class Endereco implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
+
     private String rua;
     private String cidade;
     private String estado;
 
-    @JsonIgnore
     @OneToOne(mappedBy = "endereco", fetch = FetchType.LAZY)
     private Funcionario funcionario;
 }

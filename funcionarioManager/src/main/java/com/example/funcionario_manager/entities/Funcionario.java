@@ -29,8 +29,7 @@ public class Funcionario implements Serializable {
     private String nome;
     private String cargo;
 
-    @NotNull
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id")
     private Endereco endereco;
 }

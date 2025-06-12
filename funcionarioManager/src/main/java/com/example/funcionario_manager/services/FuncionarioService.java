@@ -1,5 +1,8 @@
 package com.example.funcionario_manager.services;
 
+import com.example.funcionario_manager.dtos.funcionario.FuncionarioRequestDTO;
+import com.example.funcionario_manager.dtos.funcionario.FuncionarioResponseDTO;
+import com.example.funcionario_manager.dtos.funcionario.FuncionarioUpdateDTO;
 import com.example.funcionario_manager.entities.Endereco;
 import com.example.funcionario_manager.entities.Funcionario;
 import com.example.funcionario_manager.exceptions.FuncionarioJaExisteException;
@@ -12,68 +15,65 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class FuncionarioService {
-
-    private static final String FUNCIONARIO_NAO_ENCONTRADO = "Funcionario não encontrado.";
 
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
 
     @Transactional
-    public Funcionario criaFuncionario(Funcionario funcionario) {
-        Optional<Funcionario> funcionario1 = funcionarioRepository.findByCpf(funcionario.getCpf());
+    public FuncionarioResponseDTO criaFuncionario(FuncionarioRequestDTO dto) {
 
-        if (funcionario1.isPresent()) {
-            throw new FuncionarioJaExisteException();
-        } else {
-            return funcionarioRepository.save(funcionario);
+        if (funcionarioRepository.existsByCpf(dto.cpf())) {
+            throw new FuncionarioJaExisteException("Funcionário Já existe");
         }
 
+        Funcionario funcionario = new Funcionario();
+
+        funcionario.setCpf(dto.cpf());
+        funcionario.setNome(dto.nome());
+        funcionario.setCargo(dto.cargo());
+
+        Endereco endereco = new Endereco();
+        endereco.setRua(dto.enderecoRequestDTO().rua());
+        endereco.setCidade(dto.enderecoRequestDTO().cidade());
+        endereco.setEstado(dto.enderecoRequestDTO().estado());
+
+        funcionario.setEndereco(endereco);
+
+        Funcionario funcionarioSalvo = funcionarioRepository.save(funcionario);
+
+        return new FuncionarioResponseDTO(funcionarioSalvo.getId(), funcionarioSalvo.getCpf(), funcionarioSalvo.getNome(), funcionarioSalvo.getCargo());
+
     }
 
 
     @Transactional(readOnly = true)
-    public Page<Funcionario> getFuncionariosPaginados(int page, int size) {
+    public Page<FuncionarioResponseDTO> getFuncionariosPaginados(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return funcionarioRepository.findAll(pageable);
+        return funcionarioRepository.buscaTodosPaginados(pageable);
     }
 
 
     @Transactional(readOnly = true)
-    public Funcionario getFuncionarioByCpf(String cpf) {
-        Optional<Funcionario> funcionario = funcionarioRepository.findByCpf(cpf);
-
-        return funcionario.orElse(null);
-
+    public FuncionarioResponseDTO getFuncionarioByCpf(String cpf) {
+        return funcionarioRepository.findDTOByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("Usuário não existe."));
     }
 
 
     @Transactional
-    public Funcionario atualizaFuncionarioByCpf(String cpf, Funcionario funcionarioAtualizado) {
-        Optional<Funcionario> funcionario = funcionarioRepository.findByCpf(cpf);
+    public FuncionarioResponseDTO atualizaFuncionarioByCpf(String cpf, FuncionarioUpdateDTO funcionarioAtualizado) {
 
-        if(funcionario.isPresent()){
-            Funcionario funcionario1 = funcionario.get();
+        Funcionario funcionario = funcionarioRepository.findByCpf(cpf).orElseThrow(() -> new ResourceNotFoundException("Funcionario não encontrado."));
 
-            funcionario1.setNome(funcionarioAtualizado.getNome());
-            funcionario1.setCargo(funcionarioAtualizado.getCargo());
+        funcionario.setNome(funcionarioAtualizado.nome());
+        funcionario.setCargo(funcionarioAtualizado.cargo());
 
-            Endereco endereco = funcionario1.getEndereco();
+        Funcionario funcionarioSaved = funcionarioRepository.save(funcionario);
 
-            endereco.setRua(funcionarioAtualizado.getEndereco().getRua());
-            endereco.setCidade(funcionarioAtualizado.getEndereco().getCidade());
-            endereco.setEstado(funcionarioAtualizado.getEndereco().getEstado());
-
-            return funcionarioRepository.save(funcionario1);
-        }else{
-            throw  new ResourceNotFoundException(FUNCIONARIO_NAO_ENCONTRADO);
-        }
-
+        return new FuncionarioResponseDTO(funcionarioSaved.getId(), funcionarioSaved.getCpf(), funcionarioSaved.getNome(), funcionarioSaved.getCargo());
 
     }
 
@@ -85,7 +85,7 @@ public class FuncionarioService {
 
 
     @Transactional(readOnly = true)
-    public Page<Funcionario> buscaFuncionariosPorNome(String nome, int page, int size) {
+    public Page<FuncionarioResponseDTO> buscaFuncionariosPorNome(String nome, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         return funcionarioRepository.findByNamePaginados(nome, pageable);
@@ -93,7 +93,7 @@ public class FuncionarioService {
 
 
     @Transactional(readOnly = true)
-    public Page<Funcionario> buscaFuncionariosPorCargo(String cargo, int page, int size) {
+    public Page<FuncionarioResponseDTO> buscaFuncionariosPorCargo(String cargo, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         return funcionarioRepository.findByCargoPaginados(cargo, pageable);
@@ -101,7 +101,7 @@ public class FuncionarioService {
 
 
     @Transactional(readOnly = true)
-    public Page<Funcionario> buscaFuncionariosPorCidade(String cidade, int page, int size) {
+    public Page<FuncionarioResponseDTO> buscaFuncionariosPorCidade(String cidade, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return funcionarioRepository.findByCidadePaginados(cidade, pageable);
     }

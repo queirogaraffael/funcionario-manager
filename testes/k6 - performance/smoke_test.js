@@ -3,7 +3,7 @@ import { check, sleep } from 'k6';
 
 export let options = {
     vus: 1,
-    duration: '1m',
+    duration: '5s',
 };
 
 
@@ -22,7 +22,7 @@ export default function () {
         cpf: '12345678911',
         nome: 'Nome',
         cargo: 'Cargo',
-        endereco: endereco
+        enderecoRequestDTO: endereco
     }), { headers: { 'Content-Type': 'application/json' } });
 
     check(response, {
